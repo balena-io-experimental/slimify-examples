@@ -1,0 +1,16 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-alpine
+
+RUN install_packages lighttpd
+
+WORKDIR /usr/src/app
+
+COPY src/start.sh ./
+
+COPY src/lighttpd.conf ./
+
+RUN mkdir -p /var/www/servers/test/pages/
+
+COPY src/index.html /var/www/servers/test/pages/
+
+
+CMD ["sh", "start.sh"]

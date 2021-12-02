@@ -1,0 +1,39 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian:buster-run AS builder
+
+WORKDIR /usr/src/app
+
+# make folder readable by other users -> _apt can access some deb files otherwise
+RUN chmod 777 /usr/src/app
+
+RUN mkdir -p /usr/src/debian-rootfs 
+
+RUN install_packages build-essential
+
+# list of packages to be installed in rootfs we will use in next stage
+ARG PACKAGES="lighttpd"
+
+# download all packages and dependencies
+RUN apt update && apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${PACKAGES} | grep "^\w" | sort -u)
+
+# install packages to separate rootfs
+RUN for pkg in *.deb; \
+      do dpkg-deb  -x $pkg /usr/src/debian-rootfs; \
+      done
+
+
+FROM busybox:stable
+
+COPY --from=builder /usr/src/debian-rootfs ./
+
+WORKDIR /usr/src/app
+
+COPY src/start.sh ./
+
+COPY src/lighttpd.conf ./
+
+RUN mkdir -p /var/www/servers/test/pages/
+
+COPY src/index.html /var/www/servers/test/pages/
+
+CMD ["sh", "start.sh"]
+

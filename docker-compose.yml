@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+ busybox-entware:
+    build: 
+      dockerfile: ./busybox-entware/Dockerfile
+      context: ./                       
+    ports:
+      - 3001:3000
+ system-package-manager:
+    build:
+      dockerfile: ./system-package-manager/Dockerfile.template
+      context: ./
+    ports:
+      - 3002:3000                   
+ alpine:
+    build:
+      dockerfile: ./alpine/Dockerfile.template
+      context: ./
+    ports:
+      - 3003:3000                   
