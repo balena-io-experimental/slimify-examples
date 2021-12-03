@@ -19,3 +19,9 @@ services:
       context: ./
     ports:
       - 3003:3000                   
+ buildroot:
+    build:
+      dockerfile: ./buildroot/Dockerfile.template
+      context: ./
+    ports:
+      - 3004:3000                   
