@@ -59,9 +59,11 @@ RUN ls -al /rootfs
 
 RUN find /rootfs -iname *lighttpd*
 
-FROM busybox
+# FROM busybox
+FROM scratch
 
 COPY --from=rootfs rootfs/ /
+
 WORKDIR /usr/src/app
 
 COPY src/start.sh ./
@@ -72,4 +74,6 @@ RUN mkdir -p /var/www/servers/test/pages/
 
 COPY src/index.html /var/www/servers/test/pages/
 
-CMD sleep infinity
+SHELL ["/bin/sh", "-o", "pipefail", "-c"]
+
+CMD ["sh", "start.sh"]
